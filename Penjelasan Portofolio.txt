@@ -1,0 +1,2398 @@
+import HomePage from "./components/HomePage";
+
+export default function Home() {
+  return (
+    <>
+      <HomePage />
+    </>
+  );
+}
+
+import { Bebas_Neue, Gruppo } from 'next/font/google'
+import "./globals.css";
+import Layout from "./components/layout/layout";
+
+const bebasNeue = Bebas_Neue({
+  weight: '400',
+  subsets: ['latin'],
+})
+
+const gruppo = Gruppo({
+  weight: '400',
+  subsets: ['latin'],
+})
+
+export const metadata = {
+  title: 'Rinaldi - Full Stack Developer',
+  description: 'Portfolio website of Rinaldi, a passionate full-stack developer specializing in React, Next.js, and modern web technologies.',
+  keywords: ['portfolio', 'developer', 'react', 'nextjs', 'typescript'],
+  authors: [{ name: 'Rinaldi' }],
+  creator: 'Rinaldi',
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body
+        className={`${bebasNeue.variable} ${gruppo.variable} antialiased`}
+      >
+          <Layout>
+            {children}
+          </Layout>
+      </body>
+    </html>
+  );
+}
+
+
+// About Section src\app\About\page.jsx
+
+"use client"
+import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from "next/navigation";
+import Skill from "./../components/section/SkillSection";
+import {
+    MapPin,
+    Calendar,
+    Mail,
+    Phone,
+    Download,
+    Award,
+    Users,
+    Code,
+    Coffee,
+    Heart,
+    Star,
+    Briefcase,
+    GraduationCap,
+    ChevronRight,
+    ChevronDown,
+    ChevronUp
+} from 'lucide-react';
+
+// Komponen ExperienceItem yang terpisah untuk animasi
+const ExperienceItem = ({ exp, index, isVisible }) => {
+    const isEven = index % 2 === 0;
+
+    return (
+        <div className={`relative mb-16 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} flex flex-col lg:flex`}>
+            {/* Timeline dot dengan animasi */}
+            <div className={`absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 rounded-full border-4 border-white shadow-lg z-10 transition-all duration-700 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                }`}></div>
+
+            {/* Content card dengan animasi */}
+            <div className={`lg:w-1/2 ${isEven ? 'lg:pr-12' : 'lg:pl-12'} mb-8 lg:mb-0 transition-all duration-700 ease-out ${isVisible
+                ? 'opacity-100 translate-x-0'
+                : isEven
+                    ? 'opacity-0 -translate-x-10'
+                    : 'opacity-0 translate-x-10'
+                }`}>
+                <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-shadow">
+                    {/* Period badge */}
+                    <div className="inline-flex items-center bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium mb-6">
+                        <div className="flex gap-4">
+                            <span>{exp.period.split(' - ')[0]}</span>
+                            <span className="text-gray-400">|</span>
+                            <span>{exp.period.split(' - ')[1]}</span>
+                            <span className="text-gray-400">|</span>
+                            <span className="text-gray-300">{exp.location}</span>
+                        </div>
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{exp.company}</h3>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Briefcase className="w-4 h-4 text-blue-600" />
+                        <span className="font-semibold text-gray-800">{exp.position}</span>
+                        <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">{exp.type}</span>
+                    </div>
+
+                    <p className="text-gray-700 leading-relaxed mb-6">{exp.description}</p>
+
+                    {/* Technologies */}
+                    <div className="mb-6">
+                        <h4 className="font-semibold text-gray-900 mb-3">Technologies Used</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {exp.technologies.map((tech, techIndex) => (
+                                <span key={techIndex} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                                    {tech}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Achievements */}
+                    <div>
+                        <h4 className="font-semibold text-gray-900 mb-3">Key Achievements</h4>
+                        <ul className="space-y-2">
+                            {exp.achievements.map((achievement, achIndex) => (
+                                <li key={achIndex} className="flex items-start gap-2 text-gray-700">
+                                    <ChevronRight className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <span>{achievement}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default function About() {
+    const [activeExperience, setActiveExperience] = useState(0);
+    const [showAllExperiences, setShowAllExperiences] = useState(false);
+    const [visibleExperiences, setVisibleExperiences] = useState({});
+    const experienceRefs = useRef([]);
+    const router = useRouter();
+
+    // Professional Experience Data (ditambah lebih banyak data untuk demo)
+    const experiences = [
+        {
+            id: 1,
+            period: "Feb 2024 - Jun 2024",
+            company: " RevoU Tech Academy",
+            position: "Cohort Kampus Merdeka MSIB Studi Independent (Data Analysis & Software Engineering)",
+            type: " Internship  (Remote) ",
+            location: "Jakarta, Indonesia",
+            description: "Learned data analysis with SQL and leveraged AIpowered visualization tools to extract insights. Developed web applications using HTML, CSS, and JavaScript, emphasizing usability and functionality. Collaborated on a Capstone Project, strengthening problem-solving and teamwork in a real-world tech setting.",
+            technologies: ["Javascript", "SQL", "Chart.js", "Looker Studio", "Tableau", "Google BigQuery", "Git / GitHub", "Teamwork"],
+            achievements: [
+                "Improved application performance by 80%++",
+                "Successfully fixed 10+ critical bugs",
+                "Collaborated with cross-functional teams (Data Analyts Team and Web Developer Team)"
+            ]
+        },
+        {
+            id: 2,
+            period: "Feb 2025 - Jun 2025",
+            company: "Bank DBS Foundation & Dicoding",
+            position: "Cohort Coding Camp DBS Foundation X Dicoding (Fullstack Web Developer)",
+            type: "Internship  (Remote)",
+            location: "Jakarta, Indonesia",
+            description: "Gained comprehensive skills in web development, from fundamentals(HTML, CSS, advanced JavaScript) to front- end frameworks, responsive design, and Webpack. Built practical applications including Progressive Web Apps with offline features, REST API integrations, and map-driven interactive solutions, while exploring Node.js back-end development",
+            technologies: ["React", "Next.js", "Express.js", "PostgreSQL", "tensorflowJS", "TypeScript", "Figma", "shadcnUI"],
+            achievements: [
+                "Developed and deployed a customer churn prediction model with 80% accuracy",
+                "Reduced loading time by 40% through optimization",
+                "Collaborated with cross-functional teams (Machine Learning Team and Web Developer Team)"
+            ]
+        },
+        {
+            id: 3,
+            period: "Open for Opportunities",
+            company: "Your Company",
+            position: "Potential Role (Web Developer / Data Analyst)",
+            type: "Full-time / Contract / Internship",
+            location: "Anywhere (Remote/On-site)",
+            description: "Eager to contribute my skills in web development and data analysis to your company. I focus on building impactful, user-friendly, and scalable solutions while collaborating effectively with cross-functional teams.",
+            technologies: ["React", "Next.js", "SQL", "NoSQL", "NodeJS", "Express.js", "Vite.js", "TypeScript", "Google BigQuery", "Tableau", "Looker Studio", "", "Figma", "Git/GitHub"],
+            achievements: [
+                "Deliver projects on time and within budget",
+                "Improve system performance and user experience",
+                "Implement best practices for scalability and accessibility"
+            ]
+        }
+
+    ];
+
+    // Personal stats
+    const stats = [
+        { icon: Code, label: "Projects Completed", value: "5+", color: "text-blue-600" },
+        // { icon: Users, label: "Happy Clients", value: "15+", color: "text-green-600" },
+        { icon: Coffee, label: "Coffee Consumed", value: "100+", color: "text-amber-600" },
+        { icon: Award, label: "Years Experience", value: "1+", color: "text-purple-600" }
+    ];
+
+    // Tentukan berapa banyak experience yang ditampilkan awal
+    const displayedExperiences = showAllExperiences
+        ? experiences
+        : experiences.slice(0, 2);
+
+    // Setup Intersection Observer untuk animasi scroll
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('data-id');
+                        setVisibleExperiences(prev => ({ ...prev, [id]: true }));
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        experienceRefs.current.forEach(ref => {
+            if (ref) observer.observe(ref);
+        });
+
+        return () => {
+            experienceRefs.current.forEach(ref => {
+                if (ref) observer.unobserve(ref);
+            });
+        };
+    }, [displayedExperiences]);
+
+    // Auto-rotate experience cards
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveExperience((prev) => (prev + 1) % experiences.length);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [experiences.length]);
+
+    return (
+        <div id="about" className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            {/* Hero Section - Who Am I? */}
+            <section className="relative py-20 px-6 lg:px-20 overflow-hidden">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+                        {/* Left Content */}
+                        <div className="space-y-8">
+                            <div>
+                                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+                                    Who Am I?
+                                </h1>
+                                <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-8"></div>
+                            </div>
+
+                            <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
+                                <p>
+                                    Hi! I'm <span className="font-semibold text-blue-600">Rinaldi Mulya</span>, a junior web developer with a strong foundation in
+                                    front-end and back-end technologies. I enjoy building responsive, user-friendly, and scalable applications.
+                                </p>
+                                <p>
+                                    My journey started from self-learning and internships, where I worked on projects involving
+                                    <span className="font-semibold"> Next.js, React, Express.js, and SQL</span>.
+                                    I also explored <span className="font-semibold">data analysis and machine learning</span>
+                                    through real projects, applying tools like BigQuery, Tableau, and TensorFlowJS to create meaningful insights and solutions.
+                                </p>
+                                <p>
+                                    Outside of coding, I love learning new technologies, improving my problem-solving skills,
+                                    and collaborating with teams to bring ideas into impactful digital products.
+                                    I'm eager to keep growing and contribute to innovative projects.
+                                </p>
+                                <p>
+                                    Beyond tech, I enjoy spending time in nature — I’ve gone on several mountain hikes that keep me grounded and refreshed.
+                                    I’m also a fan of open-world and soul-like games such as <span className="italic">Wuthering Waves</span> and <span className="italic">Elden Ring</span>,
+                                    which spark my sense of exploration and challenge.
+                                    In quieter moments, I often head to the library to enjoy the silence while reading books that pique my curiosity.
+                                </p>
+                            </div>
+
+
+                        </div>
+
+                        {/* Right Content - Photo Gallery */}
+                        <div className="relative">
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Main large photo */}
+                                <div className="col-span-2 relative">
+                                    <img
+                                        src="/images/A.jpg"
+                                        alt="Professional headshot"
+                                        className="w-full h-64 object-cover rounded-2xl shadow-lg"
+                                    />
+                                    <div className="absolute -bottom-4 -right-4 bg-blue-600 text-white p-3 rounded-full">
+                                        <Code className="w-6 h-6" />
+                                    </div>
+                                </div>
+
+                                {/* Smaller photos */}
+                                <div className="relative">
+                                    <img
+                                        src="/images/B.jpg"
+                                        alt="Working setup"
+                                        className="w-full h-32 object-cover rounded-xl shadow-md"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <img
+                                        src="/images/C.png"
+                                        alt="Conference or event"
+                                        className="w-full h-32 object-cover rounded-xl shadow-md"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Floating elements */}
+                            <div className="absolute -top-4 -left-4 bg-purple-100 p-3 rounded-full">
+                                <Heart className="w-5 h-5 text-purple-600" />
+                            </div>
+                            <div className="absolute top-1/2 -right-6 bg-green-100 p-2 rounded-full">
+                                <Star className="w-4 h-4 text-green-600" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Stats Section */}
+            <section className="py-16 px-6 lg:px-20 bg-white">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
+                        {stats.map((stat, index) => {
+                            const IconComponent = stat.icon;
+                            return (
+                                <div key={index} className="text-center group">
+                                    <div className="bg-gray-50 p-6 rounded-2xl group-hover:bg-gray-100 transition-colors">
+                                        <IconComponent className={`w-8 h-8 mx-auto mb-4 ${stat.color}`} />
+                                        <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                                        <div className="text-gray-600 text-sm">{stat.label}</div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* Professional Experience Section */}
+            <section className="py-20 px-6 lg:px-20 bg-gradient-to-br from-slate-50 to-blue-50">
+                <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Professional Experience</h2>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            My journey through various roles has shaped me into a versatile developer with a strong foundation in both frontend and backend technologies.
+                        </p>
+                    </div>
+
+                    {/* Timeline */}
+                    <div className="relative">
+                        {/* Vertical line */}
+                        <div className="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-gray-300"></div>
+
+                        {displayedExperiences.map((exp, index) => {
+                            // Inisialisasi ref jika belum ada
+                            if (!experienceRefs.current[index]) {
+                                experienceRefs.current[index] = React.createRef();
+                            }
+
+                            return (
+                                <div
+                                    key={exp.id}
+                                    ref={el => experienceRefs.current[index] = el}
+                                    data-id={exp.id}
+                                >
+                                    <ExperienceItem
+                                        exp={exp}
+                                        index={index}
+                                        isVisible={visibleExperiences[exp.id] || false}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Show More/Less Button */}
+                    {experiences.length > 2 && (
+                        <div className="text-center mt-12">
+                            <button
+                                onClick={() => setShowAllExperiences(!showAllExperiences)}
+                                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300"
+                            >
+                                {showAllExperiences ? (
+                                    <>
+                                        <ChevronUp className="w-5 h-5" />
+                                        Show Less
+                                    </>
+                                ) : (
+                                    <>
+                                        <ChevronDown className="w-5 h-5" />
+                                        Show More ({experiences.length - 2} more)
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* Skills & Expertise Section */}
+            <Skill />
+
+            {/* Call to Action */}
+            <section className="py-20 px-6 lg:px-20 bg-gradient-to-r from-blue-600 to-purple-700">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="text-4xl font-bold text-white mb-6">
+                        Let's Work Together
+                    </h2>
+                    <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                        I'm always excited to take on new challenges and collaborate on innovative projects.
+                        Let's create something amazing together!
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="https://mail.google.com/mail/?view=cm&to=rinaldimulyatam@gmail.com" className="bg-white text-blue-600 px-8 py-4 rounded-lg hover:bg-gray-50 transition-colors font-semibold flex items-center justify-center gap-2">
+                            <Mail className="w-5 h-5" />
+                            Get In Touch
+                        </a>
+                        <button onClick={() => router.push("/Projects")} className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-blue-600 transition-all font-semibold">
+                            View My Work
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    );
+}
+
+// Projects Page src\app\Projects\page.jsx
+"use client";
+import { useState } from 'react';
+import { ExternalLink, Github } from 'lucide-react';
+
+export default function Projects() {
+    const [hoveredProject, setHoveredProject] = useState(null);
+    const [activeCategory, setActiveCategory] = useState('All');
+
+    const projects = [
+        {
+            id: 1,
+            title: "NYC Properties Dashboard (Web app)",
+            subtitle: "Dashboard Interactive for NYC Real Estate",
+            year: "2024",
+            category: "Data Analytics",
+            description: "Application Data Analytics Dashboard for NYC Real Estate Properties. Features include interactive charts, data filtering, and detailed property insights.",
+            image: "/images/dashboard.png",
+            technologies: ["Javascript", "CSS", "ChartJS", "HTML","Figma"],
+            links: {
+                live: "https://km-feb24-jayapura-10-eight.vercel.app/",
+                github: "https://github.com/RinaldiMulya/Repo-KM-RevoU-Team10?tab=readme-ov-file"
+            }
+        },
+        {
+            id: 2,
+            title: "PENSi — Pension Income Estimator (Web App)",
+            subtitle: "Platform for Simulating Pension Plans",
+            year: "2025",
+            category: "Web Development",
+            description: "Fullstack web application for pension planning simulation, featuring dynamic input forms, API-based real-time pension calculations, and interactive result visualization.",
+            image: "/images/Pensi.png",
+            technologies: ["Next.js", "Tailwind CSS", "Express.js", "Figma"],
+            links: {
+                live: "https://pensi-seven.vercel.app/",
+                github: "https://github.com/DBS-Dicoding-2025-Jakarta/PENSi"
+            }
+        },
+        {
+            id: 3,
+            title: "School Management System",
+            subtitle: "Comprehensive Academic Management Platform",
+            year: "2024",
+            category: "Web Development",
+            description: "A comprehensive school management application that streamlines administrative tasks, student enrollment, and academic performance tracking.",
+            image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop&crop=center",
+            technologies: ["React", "Next.js", "Zod", "D3.js", "Recharts","Figma"],
+            links: {
+                live: "#",
+                github: "https://github.com/RinaldiMulya/SchoolManagement"
+            }
+        },
+        {
+            id: 4,
+            title: "Story App",
+            subtitle: "A platform for sharing and discovering stories",
+            year: "2025",
+            category: "Web Development",
+            description: "Story App is a web application built with Next.js, React, and TypeScript for sharing stories with photos and geographical locations. Users can create stories with a title, description, photo, and a location on an interactive map.",
+            image: "/images/image.png",
+            technologies: ["Next.js 15", "React 19", "TypeScript", "Tailwind CSS", "Leaflet.js", "Zod"],
+            links: {
+                live: "https://frontend-dstory.vercel.app/",
+                github: "https://github.com/RinaldiMulya/frontend-Dstory"
+            }
+        }
+    ];
+
+    const categories = ['All', 'Web Development', 'Data Analytics', 'Other'];
+
+    const filteredProjects = activeCategory === 'All' 
+        ? projects 
+        : projects.filter(project => project.category === activeCategory);
+
+    const getCategoryColor = (category) => {
+        switch (category) {
+            case 'Data Analytics':
+                return 'bg-purple-100 text-purple-800 border-purple-200';
+            case 'Web Development':
+                return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'Other':
+                return 'bg-gray-100 text-gray-800 border-gray-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+    };
+
+    return (
+        <section id="projects" className="py-16 min-h-screen">
+            <div className="container mx-auto px-4 max-w-7xl">
+                {/* Header */}
+                <div className="text-center mb-16">
+                    <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Other Note Worthy Projects
+                    </h2>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Here are some of the projects I've worked on, showcasing my skills in web development, AI integration, and modern technologies.
+                    </p>
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="flex justify-center mb-12">
+                    <div className="flex flex-wrap gap-2 bg-white rounded-full p-2 shadow-lg border">
+                        {categories.map((category) => (
+                            <button
+                                key={category}
+                                onClick={() => setActiveCategory(category)}
+                                className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                                    activeCategory === category 
+                                        ? 'bg-gray-800 text-white' 
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                {category}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Projects Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {filteredProjects.map((project) => (
+                        <div
+                            key={project.id}
+                            className="group relative bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
+                        >
+                            {/* Year Badge */}
+                            <div className="absolute top-4 left-4 z-20 bg-gray-800 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                {project.year}
+                            </div>
+
+                            {/* Category Badge */}
+                            <div className={`absolute top-4 right-4 z-20 px-3 py-1 rounded-full text-sm font-medium border ${getCategoryColor(project.category)}`}>
+                                {project.category}
+                            </div>
+
+                            {/* Image Container - HOVER TRIGGER AREA */}
+                            <div 
+                                className="relative h-64 overflow-hidden cursor-pointer"
+                                onMouseEnter={() => setHoveredProject(project.id)}
+                                onMouseLeave={() => setHoveredProject(null)}
+                            >
+                                {/* Background Image - Always present */}
+                                <img
+                                    src={project.image}
+                                    alt={project.title}
+                                    className="w-full h-full object-cover transition-all duration-500"
+                                />
+                                
+                                {hoveredProject === project.id ? (
+                                    // Website Preview on Hover
+                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-600/90 to-purple-600/90 transition-all duration-500 transform scale-100">
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <div className="text-center p-8">
+                                                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                                                    <ExternalLink className="w-10 h-10 text-white" />
+                                                </div>
+                                                <p className="text-white/80 text-sm font-medium">Website Preview</p>
+                                                <p className="text-2xl font-bold text-white mt-2">{project.title}</p>
+                                                <p className="text-white/90 mt-1">{project.subtitle}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    // Normal state - Dark overlay with title
+                                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent flex flex-col justify-end p-6 transition-all duration-500">
+                                        <h3 className="text-2xl font-bold text-white mb-1 transform transition-all duration-500">
+                                            {project.title}
+                                        </h3>
+                                        <p className="text-gray-200 text-sm opacity-90">
+                                            {project.subtitle}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Content Area */}
+                            <div className="p-6">
+                                <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                    {project.description}
+                                </p>
+
+                                {/* Technologies */}
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {project.technologies.slice(0, 6).map((tech, index) => (
+                                        <span
+                                            key={index}
+                                            className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium hover:bg-gray-200 transition-colors duration-200"
+                                        >
+                                            {tech}
+                                        </span>
+                                    ))}
+                                    {project.technologies.length > 6 && (
+                                        <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-full text-xs">
+                                            +{project.technologies.length - 6} more
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="flex gap-3">
+                                    <a
+                                        href={project.links.live}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                                    >
+                                        <ExternalLink size={16} />
+                                        <span className="text-sm font-medium">Live Demo</span>
+                                    </a>
+                                    <a
+                                        href={project.links.github}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-2 bg-gray-800 text-white py-2 px-4 rounded-lg hover:bg-gray-900 transition-all duration-300 transform hover:scale-105"
+                                    >
+                                        <Github size={16} />
+                                        <span className="text-sm font-medium">Code</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* View More Projects Button */}
+                <div className="text-center mt-16">
+                    <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-medium hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                        View More Projects on GitHub
+                    </button>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// Layout Component src\app\components\layout\layout.jsx
+'use client';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Navbar from './navbar';
+import Sidebar from './sidebar';
+
+const Layout = ({ children }) => {
+    const pathname = usePathname();
+    const [activeSection, setActiveSection] = useState('hero');
+    const [isClient, setIsClient] = useState(false);
+
+    // Check if we're on homepage
+    const isHomePage = pathname === '/';
+
+    // Handle hydration
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    const handleSectionChange = (sectionId) => {
+        setActiveSection(sectionId);
+    };
+
+    // Enhanced Intersection Observer for automatic section detection (only on homepage)
+    useEffect(() => {
+        if (!isHomePage || !isClient) return;
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '-40% 0px -40% 0px',
+            threshold: [0, 0.1, 0.5, 0.9, 1]
+        };
+
+        const observerCallback = (entries) => {
+            let bestEntry = null;
+            let highestRatio = 0;
+
+            entries.forEach((entry) => {
+                if (entry.isIntersecting && entry.intersectionRatio > highestRatio) {
+                    highestRatio = entry.intersectionRatio;
+                    bestEntry = entry;
+                }
+            });
+
+            if (bestEntry) {
+                setActiveSection(bestEntry.target.id);
+            }
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+        const sections = [
+            'hero',
+            'about-preview',
+            'projects-preview',
+            'skills-preview',
+            'contact-preview'
+        ];
+
+        sections.forEach((sectionId) => {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                observer.observe(element);
+            }
+        });
+
+        return () => {
+            sections.forEach((sectionId) => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    observer.unobserve(element);
+                }
+            });
+        };
+    }, [isHomePage, isClient]);
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-white via-gray-400 to-neutral-900">
+            {/* Navigation */}  
+            <Navbar />
+
+            {/* Layout Container - Conditional Grid based on homepage */}
+            <div className={`min-h-[calc(100vh-64px)] ${isHomePage ? 'md:grid md:grid-cols-[200px_1fr]' : ''}`}>
+                {/* Desktop/Tablet Sidebar - Only show on homepage after client hydration */}
+                {isHomePage && isClient && (
+                    <div className="hidden md:block">
+                        <Sidebar
+                            activeSection={activeSection}
+                            onSectionChange={handleSectionChange}
+                        />
+                    </div>
+                )}
+
+                {/* Main Content Area */}
+                <main className={`flex-1 ${isHomePage ? 'md:overflow-x-hidden' : ''}`}>
+                    {children}
+                </main>
+            </div>
+        </div>
+    );
+};
+
+export default Layout;
+
+// Navbar Component src\app\components\layout\navbar.jsx
+"use client";
+import { useState } from "react";
+import { useRouter, usePathname } from 'next/navigation';
+import { Menu, X, Home, User, Briefcase, Code, Mail, ArrowLeft } from "lucide-react";
+
+const Navbar = () => {
+    const router = useRouter();
+    const pathname = usePathname();
+    const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    // Check if we're on homepage
+    const isHomePage = pathname === '/';
+
+    // Get page title based on current path
+    const getPageTitle = () => {
+        switch (pathname) {
+            case '/About':
+                return 'About';
+            case '/Projects':
+                return 'Projects';
+            case '/Skill':
+                return 'Skills';
+            case '/Contact':
+                return 'Contact';
+            default:
+                return 'RinaldiM';
+        }
+    };
+
+    // Main navigation items
+    const mainNavItems = [
+        { id: "home", label: "Home", href: "/", icon: Home },
+        { id: "about", label: "About", href: "/About", icon: User },
+        { id: "projects", label: "Projects", href: "/Projects", icon: Briefcase },
+    ];
+
+    const handleNavigation = (href) => {
+        router.push(href);
+        console.log(`Navigate to: ${href}`);
+        setIsDesktopMenuOpen(false);
+        setIsMobileMenuOpen(false);
+    };
+
+    const handleBackClick = () => {
+        router.back();
+    };
+
+    return (
+        <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center h-16">
+                    {/* Left side - Back arrow + Logo/Title */}
+                    <div className="flex items-center gap-3">
+                        {/* Back Arrow - Only show on non-home pages */}
+                        {!isHomePage && (
+                            <button
+                                onClick={handleBackClick}
+                                className="inline-flex items-center justify-center p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                                aria-label="Go back"
+                            >
+                                <ArrowLeft size={20} />
+                            </button>
+                        )}
+
+                        {/* Logo/Title */}
+                        <h1 className="text-2xl font-bold bg-black bg-clip-text text-transparent">
+                            {getPageTitle()}
+                        </h1>
+                    </div>
+
+                    {/* Desktop Hamburger Menu (md and up) */}
+                    <div className="hidden md:block">
+                        <button
+                            onClick={() => setIsDesktopMenuOpen(!isDesktopMenuOpen)}
+                            className="inline-flex items-center justify-center p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors relative"
+                        >
+                            {isDesktopMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+
+                        {/* Desktop Dropdown Menu */}
+                        {isDesktopMenuOpen && (
+                            <>
+                                {/* Backdrop */}
+                                <div
+                                    className="fixed inset-0 z-40"
+                                    onClick={() => setIsDesktopMenuOpen(false)}
+                                />
+
+                                {/* Dropdown */}
+                                <div className="absolute right-0 top-16 bg-white rounded-xl shadow-lg border border-gray-400 py-2 w-48 z-50">
+                                    {mainNavItems.map((item) => (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => handleNavigation(item.href)}
+                                            className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-300 transition-colors flex items-center gap-3"
+                                        >
+                                            <item.icon size={18} />
+                                            <span className="font-medium">{item.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Mobile Hamburger (mobile only) */}
+                    <div className="md:hidden">
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="inline-flex items-center justify-center p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                        >
+                            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Menu (mobile only) */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+                    <div className="px-2 pt-2 pb-3 space-y-1">
+                        {mainNavItems.map((item) => (
+                            <button
+                                key={item.id}
+                                onClick={() => handleNavigation(item.href)}
+                                className="w-full text-left px-3 py-3 rounded-md text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3"
+                            >
+                                <item.icon size={20} />
+                                <span className="font-medium">{item.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </nav>
+    );
+};
+
+export default Navbar;
+
+// Sidebar src\app\components\layout\sidebar.jsx
+import React from 'react';
+import { Home, User, FolderOpen, Mail, Zap } from 'lucide-react';
+
+const Sidebar = ({ activeSection, onSectionChange }) => {
+    // Navigation items
+    const navigationItems = [
+        { id: 'hero', icon: Home, label: 'Home' },
+        { id: 'about-preview', icon: User, label: 'About' },
+        { id: 'projects-preview', icon: FolderOpen, label: 'Projects' },
+        { id: 'skills-preview', icon: Zap, label: 'Skills' },
+        { id: 'contact-preview', icon: Mail, label: 'Contact' }
+    ];
+
+    // Handle section click - scroll to section
+    const scrollToSection = (sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+        onSectionChange(sectionId);
+    };
+
+    // Desktop/Tablet Fixed Sidebar - Always visible on desktop/tablet
+    return (
+        <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 bg-slate-800/90 backdrop-blur-sm rounded-r-2xl shadow-xl">
+            <div className="flex flex-col items-center py-6 px-4 space-y-3">
+                {navigationItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeSection === item.id;
+                    
+                    return (
+                        <button
+                            key={item.id}
+                            onClick={() => scrollToSection(item.id)}
+                            className={`p-4 rounded-xl transition-all duration-300 group relative ${
+                                isActive 
+                                    ? 'bg-blue-500 text-white shadow-lg' 
+                                    : 'bg-slate-700/50 text-slate-400 hover:bg-slate-600 hover:text-white'
+                            }`}
+                            title={item.label}
+                        >
+                            <Icon size={24} />
+                            
+                            {/* Tooltip */}
+                            <div className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                                {item.label}
+                            </div>
+                            
+                            {/* Active indicator */}
+                            {isActive && (
+                                <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-blue-400 rounded-full"></div>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+export default Sidebar;
+
+// About Section src\app\components\section\AboutSection.jsx
+"use client"
+import { useState, useEffect, useRef } from 'react';
+import { User, Award, Code, Database, ChevronDown, ChevronUp } from 'lucide-react';
+import Button from "../ui/button";
+import { useRouter } from "next/navigation";
+import Image from 'next/image';
+
+export default function About() {
+    const [isVisible, setIsVisible] = useState(false);
+    const [animatedBars, setAnimatedBars] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const sectionRef = useRef(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    // Delay bar animations
+                    setTimeout(() => setAnimatedBars(true), 800);
+                }
+            },
+            { threshold: 0.3 }
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
+
+    // Teks deskripsi lengkap
+    const fullDescription = `Junior Fullstack Web Developer passionate about creating modern, user-centered applications. 
+Skilled in both front-end and back-end, and always eager to learn new technologies 
+to build scalable and impactful solutions.`;
+
+    // Potong teks untuk preview
+    const previewDescription = fullDescription.substring(0, 100) + '...';
+
+    return (
+        <div className="bg-transparent relative overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute inset-0">
+                <div className="absolute top-1/4 right-20 w-64 h-64 bg-blue-900/5 rounded-full blur-3xl animate-pulse delay-700"></div>
+                <div className="absolute bottom-1/4 left-20 w-80 h-80 bg-slate-800/5 rounded-full blur-3xl animate-pulse delay-1200"></div>
+            </div>
+
+            <section
+                ref={sectionRef}
+                id="about-preview"
+                className="relative z-10 min-h-screen flex items-center px-6 lg:px-20 py-20"
+            >
+                <div className="max-w-7xl mx-auto w-full">
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                        {/* Left Content */}
+                        <div className={`space-y-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                            <div className="space-y-6">
+                                {/* Section Tag */}
+                                <div className="inline-flex items-center bg-blue-900/20 border border-blue-900/30 rounded-full px-4 py-2 text-sm text-slate-700">
+                                    <User size={16} className="mr-2 text-blue-600" />
+                                    Get to know me
+                                </div>
+
+                                {/* Main Heading */}
+                                <div className="space-y-4">
+                                    <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 leading-tight">
+                                        ABOUT 
+                                        <span className="text-blue-600"> ME</span>
+                                    </h1>
+                                    
+                                    {/* Animated Underline */}
+                                    <div className="relative">
+                                        <div className={`h-1 bg-black rounded-full transition-all duration-1000 delay-500 ${isVisible ? 'w-32' : 'w-0'}`}></div>
+                                        <div className={`h-1 bg-black rounded-full mt-2 transition-all duration-1000 delay-700 ${isVisible ? 'w-20' : 'w-0'}`}></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            <div className={`space-y-4 transition-all duration-1000 delay-600 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                <p className="text-lg lg:text-xl text-slate-700 leading-relaxed max-w-2xl">
+                                    {isExpanded ? fullDescription : previewDescription}
+                                </p>
+                                
+                                {/* Bagian yang akan disembunyikan */}
+                                {isExpanded && (
+                                    <div className="flex flex-wrap gap-6 text-sm text-slate-600">
+                                        <div className="flex items-center gap-2">
+                                            <Code size={16} className="text-blue-600" />
+                                            <span>3+ Projects Completed</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Database size={16} className="text-green-600" />
+                                            <span>Data-Driven Solutions</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Award size={16} className="text-purple-600" />
+                                            <span>Always Learning</span>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Tombol Read More/Less */}
+                                <button 
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="flex items-center text-blue-600 hover:text-blue-700 transition-colors duration-300 mt-4"
+                                >
+                                    {isExpanded ? (
+                                        <>
+                                            <span>Read Less</span>
+                                            <ChevronUp size={16} className="ml-1" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Read More</span>
+                                            <ChevronDown size={16} className="ml-1" />
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* CTA Button */}
+                            <div className={`transition-all duration-1000 delay-800 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                <Button 
+                                    variant="primary" 
+                                    size='md' 
+                                    className="group hover:scale-105 transition-all duration-300" 
+                                    onClick={() => router.push("/About")}
+                                >
+                                    <span className="group-hover:translate-x-1 transition-transform duration-300"> Learn More </span>
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Right Content - Photo */}
+                        <div className={`flex justify-center lg:justify-start right-2 transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+                            <div className="relative group">
+                                {/* Floating Background Elements */}
+                                <div className="absolute -top-8 -left-8 w-4 h-4 bg-blue-400 rounded-full animate-pulse opacity-60"></div>
+                                <div className="absolute -bottom-6 -right-6 w-3 h-3 bg-green-400 rounded-full animate-pulse delay-1000 opacity-60"></div>
+                                <div className="absolute top-1/3 -right-10 w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-2000 opacity-60"></div>
+                                <div className="absolute bottom-1/3 -left-12 w-5 h-5 bg-orange-400 rounded-full animate-pulse delay-1500 opacity-40"></div>
+
+                                {/* Gradient Border Effect */}
+                                <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-all duration-500 animate-pulse"></div>
+                                
+                                {/* Photo Container */}
+                                <div className="relative w-80 h-96 lg:w-96 lg:h-[450px] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-900 border-2 border-slate-300/50 backdrop-blur-sm shadow-2xl group-hover:shadow-3xl transition-all duration-500">
+                                    {/* Photo Placeholder */}
+                                    <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-500">
+                                        <div className="text-center space-y-4">
+                                            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center shadow-lg">
+                                                <span className="text-4xl font-bold text-white">R</span>
+                                            </div>
+                                            <Image src="/images/Nero (2).jpeg" alt="Rinaldi Mulya" layout="fill" objectFit="cover" className="group-hover:scale-105 transition-transform duration-700" />
+                                            <div className="space-y-2">
+                                                <p className="text-lg font-semibold text-slate-600">Your Professional Photo</p>
+                                                <p className="text-sm text-slate-500">Replace with your image</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Decorative Elements */}
+                                <div className="absolute top-4 right-4 w-8 h-8 border-2 border-blue-400 rounded-full opacity-30 group-hover:opacity-60 transition-opacity duration-500"></div>
+                                <div className="absolute bottom-4 left-4 w-6 h-6 border-2 border-green-400 rounded-full opacity-30 group-hover:opacity-60 transition-opacity duration-500 delay-200"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Stats Row */}
+                    <div className={`mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 transition-all duration-1000 delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                        {[
+                            { number: '5+', label: 'Projects', icon: Code },
+                            { number: '1+', label: 'Years Learning', icon: Award },
+                            { number: '5+', label: 'Technologies', icon: Database },
+                            { number: '100%', label: 'Dedication', icon: User }
+                        ].map((stat, index) => (
+                            <div key={stat.label} className="text-center group hover:scale-105 transition-transform duration-300">
+                                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-100 to-slate-100 rounded-full mb-3 group-hover:from-blue-200 group-hover:to-slate-200 transition-all duration-300">
+                                    <stat.icon size={20} className="text-blue-600" />
+                                </div>
+                                <div className="text-2xl lg:text-3xl font-bold text-slate-900 mb-1">{stat.number}</div>
+                                <div className="text-sm text-slate-600">{stat.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <style jsx>{`
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-10px); }
+                }
+                
+                .float-animation {
+                    animation: float 3s ease-in-out infinite;
+                }
+            `}</style>
+        </div>
+    );
+}
+
+// Contact Section src\app\components\section\ContactSection.jsx
+"use client"
+import { useState, useEffect, useRef } from 'react';
+import { Mail, Github, Instagram, Linkedin, MessageCircle, MapPin, Phone, Send } from 'lucide-react';
+import Image from 'next/image';
+
+export default function Contact() {
+    const [isVisible, setIsVisible] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+    const sectionRef = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                }
+            },
+            { threshold: 0.3 }
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
+
+    const handleInputChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Handle form submission here
+        console.log('Form submitted:', formData);
+        alert('Message sent successfully!');
+    };
+
+    const socialLinks = [
+        {
+            name: 'Email',
+            icon: Mail,
+            url: 'mailto:rinaldimulyatam@gmail.com',
+            color: 'bg-white hover:bg-red-200 text-black'
+        },
+        {
+            name: 'GitHub',
+            icon: Github,
+            url: 'https://github.com/RinaldiMulya',
+            color: 'bg-gray-100 hover:bg-gray-500 text-black'
+        },
+        {
+            name: 'Instagram',
+            icon: Instagram,
+            url: 'https://www.instagram.com/rinaldy_mulya/',
+            color: 'bg-white hover:bg-red-200 text-black'
+        },
+        {
+            name: 'LinkedIn',
+            icon: Linkedin,
+            url: 'https://www.linkedin.com/in/rinaldi-mulya-pratama11/',
+            color: 'bg-white hover:bg-blue-200 text-black'
+        },
+    ];
+
+    return (
+        <div id="contact-preview" className="bg-transparent relative overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute inset-0">
+                <div className="absolute top-1/4 left-20 w-96 h-96 bg-blue-900/5 rounded-full blur-3xl animate-pulse delay-300"></div>
+                <div className="absolute bottom-1/4 right-20 w-80 h-80 bg-slate-800/5 rounded-full blur-3xl animate-pulse delay-700"></div>
+            </div>
+
+            <section
+                ref={sectionRef}
+                id="contact-preview"
+                className="relative z-10 py-20 min-h-screen flex items-center"
+            >
+                <div className="max-w-7xl mx-auto px-6 lg:px-20 w-full">
+                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        {/* Left Side - Contact Info */}
+                        <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                            <div className="mb-8">
+                                <h2 className="text-5xl lg:text-6xl font-bold text-slate-900 mb-6">
+                                    Get In <span className="text-blue-600">Touch</span>
+                                </h2>
+                                {/* Animated Underline */}
+                                    <div className="relative">
+                                        <div className={`h-1 bg-black rounded-full transition-all duration-1000 delay-500 ${isVisible ? 'w-48' : 'w-0'}`}></div>
+                                        <div className={`h-1 bg-black rounded-full mt-2 transition-all duration-1000 delay-800 ${isVisible ? 'w-20' : 'w-0'}`}></div>
+                                    </div>
+                                <p className="text-lg text-slate-100 mt-9 mb-8 leading-relaxed">
+                                    Feel free to contact me if you have any questions or just want to say hi.
+                                </p>
+                            </div>
+
+                            {/* Contact Details */}
+                            <div className="space-y-6 mb-10">
+                                <div className={`flex items-center transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                                    <div className="p-3 bg-white rounded-lg mr-4">
+                                        <Mail size={24} className="text-black" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-slate-100">Email</p>
+                                        <p className="text-white">rinaldimulyatam@gmail.com</p>
+                                    </div>
+                                </div>
+
+                                <div className={`flex items-center transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                                    <div className="p-3 bg-white rounded-lg mr-4">
+                                        <MapPin size={24} className="text-black" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-slate-100">Location</p>
+                                        <p className="text-slate-100">Jakarta, Indonesia</p>
+                                    </div>
+                                </div>
+
+                                <div className={`flex items-center transition-all duration-700 delay-400 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                                    <div className="p-3 bg-white rounded-lg mr-4">
+                                        <Phone size={24} className="text-black" />
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-slate-100">Phone</p>
+                                        <p className="text-slate-100">+62 1212 9236 23</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Social Links */}
+                            <div className={`transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                                <p className="text-sm font-semibold text-white mb-4">Connect with me:</p>
+                                <div className="flex space-x-4">
+                                    {socialLinks.map((social, index) => (
+                                        <a
+                                            key={social.name}
+                                            href={social.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={`p-3 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg animate-slideInScale ${social.color}`}
+                                            style={{ animationDelay: `${(index + 6) * 100}ms` }}
+                                        >
+                                            <social.icon size={20} />
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Side - Contact Image */}
+                        <div className={`transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+                            <div className="rounded-2xl overflow-hidden shadow-2xl">
+                                <Image
+                                    src="/images/Contact.jpg"
+                                    alt="Contact illustration"
+                                    className="w-full h-full object-cover"
+                                    width={500}
+                                    height={500}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Decorative Features Section */}
+                    {/* <div className={`mt-16 text-center transition-all duration-1000 delay-800 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                        <div className="bg-transparent rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
+                            <div className="bg-gradient-to-r from-slate-800 to-slate-600 rounded-xl p-8 text-white">
+                                <div className="grid md:grid-cols-3 gap-8">
+                                    <div className="text-center">
+                                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                            <Mail className="text-white" size={24} />
+                                        </div>
+                                        <h4 className="font-semibold mb-2">Quick Response</h4>
+                                        <p className="text-sm text-gray-300">Get replies within 24 hours</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                            <MessageCircle className="text-white" size={24} />
+                                        </div>
+                                        <h4 className="font-semibold mb-2">Always Available</h4>
+                                        <p className="text-sm text-gray-300">Ready to discuss your ideas</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                            <Send className="text-white" size={24} />
+                                        </div>
+                                        <h4 className="font-semibold mb-2">Professional</h4>
+                                        <p className="text-sm text-gray-300">Quality communication guaranteed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> */}
+                </div>
+            </section>
+
+            {/* Custom CSS for animations */}
+            <style jsx>{`
+                @keyframes slideInScale {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px) scale(0.9);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
+                }
+
+                .animate-slideInScale {
+                    opacity: 0;
+                    animation: slideInScale 0.5s ease-out forwards;
+                }
+            `}</style>
+        </div>
+    );
+}
+
+// Hero Section src\app\components\section\HeroSection.jsx
+"use client"
+import { useState, useEffect } from 'react';
+import { Download, Eye, Github, Linkedin, Mail } from 'lucide-react';
+import { Button, PortfolioButtons } from '../ui/button';
+import Image from 'next/image';
+
+export default function Hero() {
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        setIsVisible(true);
+    }, []);
+
+    return (
+        <div className="min-h-screen bg-transparent relative overflow-hidden">
+            {/* Subtle animated background elements */}
+            <div className="absolute inset-0">
+                <div className="absolute top-20 left-20 w-72 h-72 bg-blue-900/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-20 right-20 w-96 h-96 bg-slate-800/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-800/5 rounded-full blur-3xl animate-pulse delay-500"></div>
+            </div>
+
+            <section id="hero" className="relative z-10 min-h-screen flex items-center px-6 lg:px-20">
+                <div className="max-w-7xl mx-auto w-full">
+                    <div className="grid lg:grid-cols-3 gap-12 lg:gap-16 items-center">
+                        {/* Left Content */}
+                        <div className={`lg:col-span-2 space-y-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                            {/* Headline */}
+                            <div className="space-y-6">
+                                <div className="inline-flex items-center bg-blue-900/20 border border-blue-900/30 rounded-full px-4 py-2 text-sm text-white">
+                                    <span className="w-3 h-3 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                                    Available for opportunities
+                                </div>
+
+                                <h1 className="text-xl lg:text-3xl xl:text-3xl text-slate-900 leading-tight">
+                                    <span className="text-slate-900 relative font-light [word-spacing:5px] tracking-widest">
+                                        Rinaldi Mulya
+                                    </span>
+                                </h1>
+
+                                {/* Animated Underline */}
+                                <div className="relative">
+                                    <div className={`h-1 bg-black rounded-full transition-all duration-1000 delay-500 ${isVisible ? 'w-48' : 'w-0'}`}></div>
+                                    <div className={`h-1 bg-black rounded-full mt-2 transition-all duration-1000 delay-800 ${isVisible ? 'w-20' : 'w-0'}`}></div>
+                                </div>
+
+                                <div className="text-xl lg:text-7xl text-slate-900 font-bold">
+                                    Junior Fullstack Web Developer
+                                </div>
+                            </div>
+
+                            {/* Subheadline */}
+                            <p className="text-lg lg:text-xl text-slate-800 leading-relaxed max-w-3xl">
+                                Hi! I'm Rinaldi — a Junior Fullstack Web Developer who loves building modern
+                                and user-friendly applications. Skilled with{' '}
+                                <span className="text-blue-400 font-semibold">React</span>,{' '}
+                                <span className="text-black font-semibold">Next.js</span>, and{' '}
+                                <span className="text-blue-700 font-semibold">SQL</span>.
+                                I also explore data analytics and enjoy creating clean, intuitive UI designs
+                                with Figma. Beyond that, I’m eager to learn more about implementing {' '}
+                                <span className="text-purple-600 font-semibold">AI</span> in web development
+                                to create smarter and more impactful applications in the future.
+                            </p>
+
+
+
+                            {/* Tech Stack */}
+                            {/* <div className="flex flex-wrap gap-3">
+                                {['React','Next.js','JavaScript','TypeScript','SQL','Tailwind CSS'].map((tech, index) => (
+                                    <span 
+                                        key={tech}
+                                        className={`px-3 py-1 bg-slate-800/30 border border-slate-700/50 rounded-full text-sm text-slate-100 backdrop-blur-sm transition-all duration-300 hover:bg-slate-700/50 hover:text-white hover:scale-105 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                                        style={{ transitionDelay: `${400 + index * 100}ms` }}
+                                    >
+                                        {tech}
+                                    </span>
+                                ))}
+                            </div> */}
+
+                            {/* CTA Buttons */}
+                            <div className={`flex flex-col sm:flex-row gap-4 transition-all duration-1000 delay-600 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                                <Button variant="primary" icon={Eye} size='md' href="#contact-preview">
+                                    Hire Me
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    icon={Download}
+                                    iconPosition="right"
+                                    size='md'
+                                    href="/files/Rinaldi Mulya Pratama CV.pdf"
+                                    download="CV-Rinaldi-Mulya.pdf"      
+                                >
+                                    Download CV
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Right Content - Photo */}
+                        <div className={`flex justify-center lg:justify-end transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+                            <div className="relative group">
+                                {/* Simple border effect */}
+                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-slate-600 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+
+                                {/* Profile image container */}
+                                <div className="relative w-80 h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden bg-slate-800/30 border-2 border-slate-700/50 backdrop-blur-sm">
+                                    {/* Placeholder for profile image */}
+                                    <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center text-slate-400">
+                                        <div className="text-center">
+                                            <div className="w-24 h-24 mx-auto mb-4 bg-blue-600 rounded-full flex items-center justify-center">
+                                                <span className="text-4xl font-bold text-white">R</span>
+                                            </div>
+                                            <Image src="/images/Nero.jpeg" alt="Your Name" layout="fill" objectFit="cover" />
+                                            <p className="text-xs mt-1 text-slate-500">Replace with your image</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Simple floating elements */}
+                                <div className="absolute -top-4 -right-4 w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                                <div className="absolute -bottom-6 -left-6 w-2 h-2 bg-white rounded-full animate-pulse delay-1000"></div>
+                                <div className="absolute top-1/2 -left-8 w-2 h-2 bg-blue-300 rounded-full animate-pulse delay-2000"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Scroll indicator */}
+                <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-1000 delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                    <div className="flex flex-col items-center text-slate-400 hover:text-white transition-colors duration-300 cursor-pointer">
+                        <span className="text-sm mb-2">Scroll to explore</span>
+                        <div className="w-6 h-10 border-2 border-current rounded-full relative">
+                            <div className="w-1 h-3 bg-current rounded-full absolute top-2 left-1/2 transform -translate-x-1/2 animate-bounce"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <style jsx>{`
+                @keyframes gradient-x {
+                    0%, 100% {
+                        background-size: 200% 200%;
+                        background-position: left center;
+                    }
+                    50% {
+                        background-size: 200% 200%;
+                        background-position: right center;
+                    }
+                }
+                
+                .animate-gradient-x {
+                    animation: gradient-x 3s ease infinite;
+                }
+                
+                .wave {
+                    animation: wave 2s infinite;
+                    transform-origin: 70% 70%;
+                }
+                
+                @keyframes wave {
+                    0% { transform: rotate(0deg); }
+                    10% { transform: rotate(14deg); }
+                    20% { transform: rotate(-8deg); }
+                    30% { transform: rotate(14deg); }
+                    40% { transform: rotate(-4deg); }
+                    50% { transform: rotate(10deg); }
+                    60% { transform: rotate(0deg); }
+                    100% { transform: rotate(0deg); }
+                }
+            `}</style>
+        </div>
+    );
+}
+
+// Project Section src\app\components\section\ProjectSection.jsx
+"use client"
+import { useState, useEffect } from 'react';
+import { ExternalLink, Github, ChevronRight, Move, ChevronLeft, ChevronRight as RightArrow, Play, X } from 'lucide-react';
+import Button from "../ui/button";
+import { useRouter } from "next/navigation";
+
+export default function Project() {
+    const [panelSize, setPanelSize] = useState(50);
+    const [activeProject, setActiveProject] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const router = useRouter();
+
+    const projects = [
+        {
+            id: 1,
+            title: "NYC Properties Dashboard (Web app)",
+            description: "Application Data Analytics Dashboard for NYC Real Estate Properties. Features include interactive charts, data filtering, and detailed property insights.",
+            technologies: ["Javascript", "Css", "ChartJS", "HTML"],
+            screenshot: "/images/dashboard.png",
+            demoVideo: "/demo/Macbook-Air-km-feb24-jayapura-10-eight.vercel.app-p_a0a6n-gv6iul.webm",
+            liveUrl: "https://km-feb24-jayapura-10-eight.vercel.app/",
+            githubUrl: "https://github.com/RinaldiMulya/Repo-KM-RevoU-Team10?tab=readme-ov-file",
+            status: "completed"
+        },
+        {
+            id: 2,
+            title: "PENSi – Pension Income Estimator (Web App)",
+            description: "Fullstack web application for pension planning simulation, featuring dynamic input forms, API-based real-time pension calculations, and interactive result visualization.",
+            technologies: ["Next.js", "Tailwind CSS", "Express.js", "Figma"],
+            screenshot: "/images/pensi.png",
+            demoVideo: "/demo/Macbook-Air-pensi-seven.vercel.app-46vc7fe_9h89pv.webm",
+            liveUrl: "https://pensi-seven.vercel.app/",
+            githubUrl: "https://github.com/DBS-Dicoding-2025-Jakarta/PENSi",
+            status: "completed"
+        },
+        {
+            id: 3,
+            title: "School Management",
+            description: "A comprehensive school management application that streamlines administrative tasks, student enrollment, and academic performance tracking.",
+            technologies: ["React", "Next.js", "Zod", "D3.js","recharts"],
+            screenshot: "/images/schoolManagement.png",
+            demoVideo: "/api/placeholder/600/400",
+            liveUrl: "https://your-fitness-tracker.vercel.app",
+            githubUrl: "https://github.com/RinaldiMulya/SchoolManagement",
+            status: "in-progress"
+        },
+        {
+            id: 4,
+            title: "Health & Fitness Tracker",
+            description: "A comprehensive health tracking application that monitors workouts, nutrition, and progress with data visualization.",
+            technologies: ["React Native", "Express", "MySQL", "Chart.js"],
+            screenshot: "/api/placeholder/600/400",
+            demoVideo: "/api/placeholder/600/400",
+            liveUrl: "https://your-fitness-tracker.vercel.app",
+            githubUrl: "https://github.com/yourusername/fitness-tracker",
+            status: "planned"
+        },
+    ];
+
+    const currentProject = projects[activeProject];
+
+    // Fungsi untuk navigasi project
+    const nextProject = () => {
+        setActiveProject((prev) => (prev + 1) % projects.length);
+        setIsHovered(false); // Reset hover state saat ganti project
+    };
+
+    const prevProject = () => {
+        setActiveProject((prev) => (prev - 1 + projects.length) % projects.length);
+        setIsHovered(false); // Reset hover state saat ganti project
+    };
+
+    // Event listener untuk keyboard
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'ArrowLeft') {
+                prevProject();
+            } else if (e.key === 'ArrowRight') {
+                nextProject();
+            } else if (e.key === 'Escape' && showModal) {
+                setShowModal(false);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [showModal]);
+
+    // Handle modal open
+    const handleOpenModal = () => {
+        if (currentProject.status === "completed") {
+            setShowModal(true);
+        }
+    };
+
+    return (
+        <>
+            <div id='projects-preview' className="min-h-screen bg-gradient-to-br from-slate-700 via-transparent to-transparent py-16 px-6 lg:px-20 rounded-3xl">
+                <div className="max-w-7xl mx-auto">
+                    
+                    {/* Header Section */}
+                    <div className="text-center mb-16 opacity-100 translate-y-0">
+                        <h2 className="relative inline-block text-4xl lg:text-5xl font-bold text-slate-900 mb-10">
+                            My <span className="text-blue-600">Projects</span>
+                            <span className="absolute left-1/2 -bottom-5 h-1 bg-black rounded-full transform -translate-x-1/2 w-80"></span>
+                            <span className="absolute left-1/2 -bottom-8 h-1 bg-black rounded-full transform -translate-x-1/2 w-40"></span>
+                        </h2>
+                        <p className="text-lg text-slate-700 max-w-2xl mx-auto">
+                            Here are some of the projects I've worked on, from completed applications
+                            to works in progress. Each one represents my growth and passion for
+                            development.
+                        </p>
+                    </div>
+
+
+                    {/* Resizable Project Showcase */}
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                        <div className="flex flex-col lg:flex-row h-[600px]">
+                            {/* Left Panel - Project Info */}
+                            <div
+                                className="lg:h-full p-8 overflow-y-auto"
+                                style={{ width: `${panelSize}%` }}
+                            >
+                                <div className="mb-6">
+                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${currentProject.status === "completed"
+                                            ? "bg-green-100 text-green-800"
+                                            : currentProject.status === "in-progress"
+                                                ? "bg-blue-100 text-blue-800"
+                                                : "bg-purple-100 text-purple-800"
+                                        }`}>
+                                        {currentProject.status === "completed"
+                                            ? "Completed"
+                                            : currentProject.status === "in-progress"
+                                                ? "In Progress"
+                                                : "Planned"}
+                                    </span>
+                                </div>
+
+                                <h3 className="text-3xl font-bold text-slate-900 mb-4">
+                                    {currentProject.title}
+                                </h3>
+
+                                <p className="text-slate-700 mb-6 leading-relaxed">
+                                    {currentProject.description}
+                                </p>
+
+                                <div className="mb-8">
+                                    <h4 className="text-lg font-semibold text-slate-900 mb-3">Technologies Used</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {currentProject.technologies.map((tech, index) => (
+                                            <span key={index} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm">
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-4">
+                                    <Button
+                                        variant="primary"
+                                        className="flex items-center gap-2 group"
+                                        disabled={currentProject.status !== "completed"}
+                                        onClick={handleOpenModal}
+                                    >
+                                        <span>Live Demo</span>
+                                        <ExternalLink size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </Button>
+
+                                    <Button
+                                        variant="outline"
+                                        className="flex items-center gap-2 group"
+                                        onClick={() => window.open(currentProject.githubUrl, '_blank')}
+                                    >
+                                        <span>View Code</span>
+                                        <Github size={16} className="group-hover:scale-110 transition-transform" />
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Resize Handle */}
+                            <div className="relative group">
+                                <div
+                                    className="w-2 h-full bg-slate-200 cursor-col-resize flex items-center justify-center transition-colors hover:bg-blue-300 active:bg-blue-400"
+                                    onMouseDown={() => {
+                                        const onMouseMove = (e) => {
+                                            const container = document.querySelector('.bg-white');
+                                            if (!container) return;
+
+                                            const rect = container.getBoundingClientRect();
+                                            const newPosition = ((e.clientX - rect.left) / rect.width) * 100;
+                                            const clampedPosition = Math.max(25, Math.min(75, newPosition));
+                                            setPanelSize(clampedPosition);
+                                        };
+
+                                        const onMouseUp = () => {
+                                            document.removeEventListener('mousemove', onMouseMove);
+                                            document.removeEventListener('mouseup', onMouseUp);
+                                        };
+
+                                        document.addEventListener('mousemove', onMouseMove);
+                                        document.addEventListener('mouseup', onMouseUp);
+                                    }}
+                                >
+                                    <Move size={16} className="text-slate-500 rotate-90" />
+                                </div>
+                            </div>
+
+                            {/* Right Panel - Interactive Project Visual */}
+                            <div
+                                className="lg:h-full bg-slate-900 flex items-center justify-center p-8 overflow-hidden"
+                                style={{ width: `${100 - panelSize}%` }}
+                            >
+                                <div className="w-full h-full relative">
+                                    {currentProject.status === "completed" ? (
+                                        /* Interactive Preview for Completed Projects */
+                                        <div
+                                            className="w-full h-full bg-slate-800 rounded-lg overflow-hidden relative group cursor-pointer"
+                                            onMouseEnter={() => setIsHovered(true)}
+                                            onMouseLeave={() => setIsHovered(false)}
+                                            onClick={handleOpenModal}
+                                        >
+                                            {/* Screenshot (Default State) */}
+                                            <img
+                                                src={currentProject.screenshot}
+                                                alt={`${currentProject.title} Screenshot`}
+                                                className={`w-full h-full object-cover transition-all duration-500 ${isHovered ? 'scale-110 opacity-80' : 'scale-100 opacity-100'
+                                                    }`}
+                                            />
+
+                                            {/* Hover Overlay */}
+                                            <div className={`absolute inset-0 bg-black bg-opacity-60 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'
+                                                } flex items-center justify-center`}>
+                                                <div className="text-center text-white">
+                                                    <div className="bg-blue-600 rounded-full p-4 mb-4 mx-auto w-16 h-16 flex items-center justify-center">
+                                                        <Play className="w-8 h-8 ml-1" fill="white" />
+                                                    </div>
+                                                    <p className="text-xl font-semibold mb-2">View Live Demo</p>
+                                                    <p className="text-sm opacity-90">Click to interact with the project</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Project Info Overlay */}
+                                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
+                                                <div className="text-center text-white">
+                                                    <p className="text-sm opacity-80 mb-1">Project Preview</p>
+                                                    <p className="text-xl font-bold">{currentProject.title}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        /* Static Preview for Non-Completed Projects */
+                                        <div className="w-full h-full bg-slate-800 rounded-lg overflow-hidden relative flex items-center justify-center">
+                                            <div className="text-center text-slate-400">
+                                                <div className="mb-4 text-6xl opacity-20">
+                                                    {currentProject.status === "in-progress" ? "⚠️" : "📋"}
+                                                </div>
+                                                <div className="text-lg font-semibold mb-2">{currentProject.title}</div>
+                                                <div className="text-sm opacity-75 capitalize">{currentProject.status}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Project Navigation dengan Panah */}
+                    <div className="mt-8 flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                            {/* Tombol Panah Kiri */}
+                            <button
+                                onClick={prevProject}
+                                className="p-2 rounded-full hover:bg-slate-200 transition-colors focus:outline-none focus:ring-2"
+                                aria-label="Previous project"
+                            >
+                                <ChevronLeft size={24} className="text-slate-700" />
+                            </button>
+
+                            {/* Indikator Dots */}
+                            <div className="flex gap-2">
+                                {projects.map((project, index) => (
+                                    <button
+                                        key={project.id}
+                                        onClick={() => setActiveProject(index)}
+                                        className={`h-3 rounded-full transition-all ${index === activeProject ? 'w-8 bg-blue-600' : 'w-3 bg-slate-500'
+                                            }`}
+                                        aria-label={`View project ${project.title}`}
+                                    />
+                                ))}
+                            </div>
+
+                            {/* Tombol Panah Kanan */}
+                            <button
+                                onClick={nextProject}
+                                className="p-2 rounded-full hover:bg-slate-200 transition-colors"
+                                aria-label="Next project"
+                            >
+                                <RightArrow size={24} className="text-slate-700" />
+                            </button>
+                        </div>
+
+                        <Button variant="ghost" className="group" onClick={() => router.push("/Projects")}>
+                            <span>View All Projects</span>
+                            <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Modal with Live Website */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl w-full max-w-7xl h-5/6 flex flex-col shadow-2xl">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center p-6 border-b bg-gray-50 rounded-t-xl">
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900">{currentProject.title}</h3>
+                                <p className="text-gray-600 text-sm">Live Interactive Demo • Click and explore the features</p>
+                            </div>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Live Website iframe */}
+                        <div className="flex-1 p-6">
+                            <iframe
+                                src={currentProject.liveUrl}
+                                className="w-full h-full rounded-lg border-0"
+                                title={`${currentProject.title} Live Demo`}
+                                loading="lazy"
+                            />
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-6 border-t bg-gray-50 rounded-b-xl">
+                            <div className="flex justify-between items-center">
+                                <div className="flex gap-2 flex-wrap">
+                                    {currentProject.technologies.map((tech, index) => (
+                                        <span
+                                            key={index}
+                                            className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full font-medium"
+                                        >
+                                            {tech}
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="flex gap-3">
+                                    <a
+                                        href={currentProject.liveUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                    >
+                                        <ExternalLink className="w-4 h-4" />
+                                        Open in New Tab
+                                    </a>
+                                    <a
+                                        href={currentProject.githubUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                                    >
+                                        <Github className="w-4 h-4" />
+                                        View Code
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}
+
+// Skill Section src\app\components\section\SkillSection.jsx
+"use client"
+import { useState, useEffect, useRef } from 'react';
+import { Code, Database, Cpu, Smartphone } from 'lucide-react';
+
+export default function Skills() {
+    const [isVisible, setIsVisible] = useState(false);
+    const [activeCategory, setActiveCategory] = useState('web'); // Default active category
+    const sectionRef = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                }
+            },
+            { threshold: 0.3 }
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, []);
+
+    const categories = [
+        {
+            id: 'web',
+            title: 'Web Development',
+            description: 'Building modern, responsive web applications',
+            icon: Code,
+            languages: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React', 'NextJS', 'TailwindCSS', 'Bootstrap', 'NodeJS', 'ExpressJS'],
+            tools: ['Visual Studio Code', 'Git', 'Github', 'Figma', 'Vite', 'Docker', 'Google Cloud', 'Postman']
+        },
+        {
+            id: 'api',
+            title: 'REST API',
+            description: 'Creating robust and scalable backend services',
+            icon: Database,
+            languages: ['NodeJS', 'ExpressJS'],
+            tools: ['Postman', 'Docker', 'MongoDB', 'PostgreSQL', 'Supabase', 'MYSQL']
+        },
+        {
+            id: 'data',
+            title: 'Data Analysis',
+            description: 'Transforming raw data into actionable insights',
+            icon: Cpu,
+            languages: ['SQL', 'Python', 'Pandas', 'NumPy'],
+            tools: ['Google BigQuery', 'Tableau', 'Power BI', 'Looker Studio', 'Excel', 'Google Sheets', 'Google Colab', 'Git']
+        }
+        // {
+        //     id: 'mobile',
+        //     title: 'Mobile Development',
+        //     description: 'Cross-platform mobile app development',
+        //     icon: Smartphone,
+        //     languages: ['React Native', 'JavaScript', 'TypeScript', 'Dart', 'Flutter'],
+        //     tools: ['Android Studio', 'React Native CLI', 'Expo', 'Xcode', 'Firebase', 'Metro']
+        // }
+    ];
+
+    const activeData = categories.find(cat => cat.id === activeCategory);
+
+    return (
+        <div id="skills-preview" className="bg-transparent relative overflow-hidden py-20">
+            {/* Background Elements */}
+            <div className="absolute inset-0">
+                <div className="absolute top-1/4 left-20 w-64 h-64 bg-blue-900/5 rounded-full blur-3xl animate-pulse delay-700"></div>
+                <div className="absolute bottom-1/4 right-20 w-80 h-80 bg-slate-800/5 rounded-full blur-3xl animate-pulse delay-1200"></div>
+            </div>
+
+            <section
+                ref={sectionRef}
+                id="skills-preview"
+                className="relative z-10 px-6 lg:px-20"
+            >
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                        <h2 className="relative inline-block text-4xl lg:text-5xl font-bold text-slate-900 mb-10">
+                            Skills & <span className="text-blue-600">Expertise</span>
+                            {/* Underline */}
+                            <span
+                                className={`absolute left-1/2 -bottom-5 h-1 bg-black rounded-full transform -translate-x-1/2 transition-all duration-1000 delay-500 ${isVisible ? 'w-80' : 'w-0'}`}
+                            ></span>
+                            <span
+                                className={`absolute left-1/2 -bottom-8 h-1 bg-black rounded-full transform -translate-x-1/2 transition-all duration-1000 delay-500 ${isVisible ? 'w-40' : 'w-0'}`}
+                            ></span>
+                        </h2>
+                        <p className="text-lg text-slate-100 max-w-2xl mx-auto">
+                            Explore my technical skills across different domains. Click on any category to see the specific technologies and tools I work with.
+                        </p>
+                    </div>
+
+                    {/* Categories Grid */}
+                    <div className="grid md:grid-cols-3 gap-6 mb-16">
+                        {categories.map((category, index) => (
+                            <div
+                                key={category.id}
+                                className={`bg-white rounded-xl p-6 shadow-sm border transition-all duration-300 cursor-pointer hover:shadow-md ${activeCategory === category.id
+                                    ? 'border-blue-300 shadow-lg ring-2 ring-blue-100'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                    } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                                style={{ transitionDelay: `${index * 100}ms` }}
+                                onClick={() => setActiveCategory(category.id)}
+                            >
+                                <div className="flex items-center">
+                                    <div className={`p-3 rounded-lg mr-4 transition-colors duration-300 ${activeCategory === category.id
+                                        ? 'bg-blue-500'
+                                        : 'bg-gray-100'
+                                        }`}>
+                                        <category.icon
+                                            size={24}
+                                            className={`transition-colors duration-300 ${activeCategory === category.id
+                                                ? 'text-white'
+                                                : 'text-gray-600'
+                                                }`}
+                                        />
+                                    </div>
+                                    <div>
+                                        <h3 className={`text-xl font-semibold transition-colors duration-300 ${activeCategory === category.id
+                                            ? 'text-blue-600'
+                                            : 'text-slate-900'
+                                            }`}>
+                                            {category.title}
+                                        </h3>
+                                        <p className="text-slate-600 text-sm">
+                                            {category.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Dynamic Languages & Frameworks Section */}
+                    <div className={`bg-white rounded-xl p-8 shadow-sm border border-gray-200 mb-6 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                        }`}>
+                        <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">
+                            Languages & Frameworks
+                        </h3>
+                        <div
+                            key={activeCategory + '-languages'} // Key for re-animation
+                            className="flex flex-wrap justify-center gap-3 animate-fadeInUp"
+                        >
+                            {activeData?.languages.map((language, index) => (
+                                <span
+                                    key={`${activeCategory}-${language}-${index}`}
+                                    className="px-4 py-2 bg-gray-100 text-slate-700 rounded-full text-sm transition-all duration-300 hover:bg-blue-100 hover:text-blue-700 animate-slideInScale"
+                                    style={{ animationDelay: `${index * 50}ms` }}
+                                >
+                                    {language}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Dynamic Tools & Technologies Section */}
+                    <div className={`bg-white rounded-xl p-8 shadow-sm border border-gray-200 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                        }`}>
+                        <h3 className="text-2xl font-semibold text-slate-900 mb-6 text-center">
+                            Tools & Technologies
+                        </h3>
+                        <div
+                            key={activeCategory + '-tools'} // Key for re-animation
+                            className="flex flex-wrap justify-center gap-3 animate-fadeInUp"
+                        >
+                            {activeData?.tools.map((tool, index) => (
+                                <span
+                                    key={`${activeCategory}-${tool}-${index}`}
+                                    className="px-4 py-2 bg-gray-100 text-slate-700 rounded-full text-sm transition-all duration-300 hover:bg-blue-100 hover:text-blue-700 animate-slideInScale"
+                                    style={{ animationDelay: `${index * 50}ms` }}
+                                >
+                                    {tool}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Custom CSS for animations */}
+            <style jsx>{`
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes slideInScale {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px) scale(0.9);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
+                }
+
+                .animate-fadeInUp {
+                    animation: fadeInUp 0.6s ease-out forwards;
+                }
+
+                .animate-slideInScale {
+                    opacity: 0;
+                    animation: slideInScale 0.4s ease-out forwards;
+                }
+            `}</style>
+        </div>
+    );
+}
+
+// src\app\components\ui\button.jsx
+import { 
+    Eye, Download, Send, ArrowRight, ExternalLink, 
+    Github, Linkedin, Mail, Phone, Calendar,
+    Loader2, Check
+} from 'lucide-react';
+
+// Main Button Component
+export const Button = ({ 
+    variant = 'primary', 
+    size = 'md', 
+    children, 
+    icon: Icon,
+    iconPosition = 'left',
+    disabled = false,
+    loading = false,
+    onClick,
+    href,
+    target,
+    className = '',
+    ...props 
+}) => {
+    // Base styles
+    const baseStyles = "inline-flex items-center justify-center font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900";
+    
+    // Variant styles
+    const variants = {
+        primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl hover:shadow-blue-900/20 focus:ring-blue-500 hover:scale-105",
+        secondary: "bg-slate-800/50 backdrop-blur-sm border-2 border-slate-700 text-white hover:bg-slate-700/50 hover:border-slate-600 focus:ring-slate-500 hover:scale-105",
+        outline: "border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500 hover:scale-105",
+        ghost: "text-slate-300 hover:text-white hover:bg-slate-800/30",
+        danger: "bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl hover:shadow-red-900/20 focus:ring-red-500 hover:scale-105",
+        success: "bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl hover:shadow-green-900/20 focus:ring-green-500 hover:scale-105"
+    };
+    
+    // Size styles
+    const sizes = {
+        sm: "px-4 py-2 text-sm rounded-md gap-2",
+        md: "px-6 py-3 text-base rounded-2xl gap-3",
+        lg: "px-8 py-4 text-lg rounded-lg gap-3",
+        xl: "px-10 py-5 text-xl rounded-xl gap-4"
+    };
+    
+    // Disabled styles
+    const disabledStyles = disabled || loading 
+        ? "opacity-50 cursor-not-allowed hover:scale-100" 
+        : "";
+    
+    const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${disabledStyles} ${className}`;
+    
+    const content = (
+        <>
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {!loading && Icon && iconPosition === 'left' && <Icon className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />}
+            {children}
+            {!loading && Icon && iconPosition === 'right' && <Icon className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />}
+        </>
+    );
+    
+    if (href) {
+        return (
+            <a
+                href={href}
+                target={target}
+                className={`${combinedClassName} group`}
+                {...props}
+            >
+                {content}
+            </a>
+        );
+    }
+    
+    return (
+        <button
+            onClick={onClick}
+            disabled={disabled || loading}
+            className={`${combinedClassName} group`}
+            {...props}
+        >
+            {content}
+        </button>
+    );
+};
+
+// Specialized Portfolio Buttons
+export const PortfolioButtons = {
+    ViewProjects: (props) => (
+        <Button variant="primary" icon={Eye} {...props}>
+            View My Projects
+        </Button>
+    ),
+    
+    DownloadCV: (props) => (
+        <Button variant="secondary" icon={Download} iconPosition="right" {...props}>
+            Download CV
+        </Button>
+    ),
+    
+    ContactMe: (props) => (
+        <Button variant="outline" icon={Send} {...props}>
+            Contact Me
+        </Button>
+    ),
+    
+    HireMe: (props) => (
+        <Button variant="primary" icon={ArrowRight} iconPosition="right" {...props}>
+            Hire Me
+        </Button>
+    ),
+    
+    LetsTalk: (props) => (
+        <Button variant="ghost" icon={Phone} {...props}>
+            Let's Talk
+        </Button>
+    ),
+    
+    ScheduleCall: (props) => (
+        <Button variant="success" icon={Calendar} {...props}>
+            Schedule a Call
+        </Button>
+    )
+};
+
+// Social Media Buttons
+export const SocialButtons = {
+    GitHub: (props) => (
+        <Button variant="ghost" icon={Github} size="sm" {...props}>
+            GitHub
+        </Button>
+    ),
+    
+    LinkedIn: (props) => (
+        <Button variant="ghost" icon={Linkedin} size="sm" {...props}>
+            LinkedIn
+        </Button>
+    ),
+    
+    Email: (props) => (
+        <Button variant="ghost" icon={Mail} size="sm" {...props}>
+            Email
+        </Button>
+    )
+};
+
+// Default export untuk komponen utama
+export default Button;
+
+// src\app\components\HomePage.jsx
+import About from "./section/AboutSection";
+import Contact from "./section/ContactSection";
+import Hero from "./section/HeroSection";
+import Skill from "./section/SkillSection";
+import Project from "./section/ProjectSection";
+
+export default function HomePage() {
+    return (
+        <>
+            <Hero />
+            <About />
+            <Project />
+            <Skill />
+            <Contact />
+        </>
+    );
+}
+
+
+{
+  "name": "portofolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.539.0",
+    "next": "^15.4.6",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-resizable-panels": "^3.0.5",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "24.2.1",
+    "@types/react": "19.1.10",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.6",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
+    "tw-animate-css": "^1.3.7"
+  }
+}
