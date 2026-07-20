@@ -130,8 +130,8 @@ export default function Hero() {
                                 <motion.a
                                     whileHover={{ scale: 1.05, y: -2 }}
                                     whileTap={{ scale: 0.95, y: 2, boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)" }}
-                                    href="/files/CV Form ParagonCorp.pdf"
-                                    download="CV-Rinaldi-Mulya.pdf"
+                                    href="/files/CV Rinaldi Mulya Pratama.pdf"
+                                    download="CV-Rinaldi-Mulya-Pratama.pdf"
                                     className="flex items-center justify-center gap-2 bg-yellow-400 text-black px-8 py-4 font-bold uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                                 >
                                     <Download size={24} />
