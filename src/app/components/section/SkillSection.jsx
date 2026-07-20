@@ -12,19 +12,19 @@ export default function Skills() {
     const categories = [
         {
             id: 'web',
-            title: 'Frontend Dev',
-            description: 'Building modern interfaces',
+            title: 'Web Development',
+            description: 'Full-stack development, PWA & Architecture',
             icon: Code,
-            languages: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'React.js', 'Next.js', 'Tailwind CSS', 'Bootstrap'],
-            tools: ['VS Code', 'Git', 'GitHub', 'Figma', 'Postman']
+            languages: ['React.js', 'Next.js (App Router)', 'TypeScript', 'JavaScript', 'Tailwind CSS v4', 'Shadcn/Radix UI', 'Zustand / Jotai', 'React Query (TanStack)', 'next-intl (i18n)', 'Playwright (Testing)', 'Node.js / Express.js', 'PostgreSQL / MySQL', 'Prisma ORM (v7)', 'Supabase (Storage & Auth)', 'NextAuth.js v5'],
+            tools: ['Feature-Sliced Design (FSD)', 'Backend for Frontend (BFF)', 'Next.js Caching', 'Progressive Web App (PWA)', 'Git / GitHub / GitLab', 'Postman', 'Figma', 'Docker', 'Vercel / Netlify', 'Storybook']
         },
         {
             id: 'data',
-            title: 'Data Analysis',
-            description: 'Transforming raw data',
-            icon: Cpu,
-            languages: ['SQL', 'Python'],
-            tools: ['Google BigQuery', 'Google Data Studio', 'Tableau', 'Power BI']
+            title: 'Data Analytics',
+            description: 'Turning raw data into business decisions',
+            icon: Database,
+            languages: ['SQL', 'Google BigQuery', 'Excel'],
+            tools: ['Power BI', 'Tableau', 'Google Data Studio']
         }
     ];
 
