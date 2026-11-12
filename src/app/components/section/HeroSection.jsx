@@ -81,7 +81,7 @@ export default function Hero() {
                                     style={{ wordSpacing: "0.3rem", letterSpacing: "-0.01em" }}
                                 >
                                     <span ref={textRef}>
-                                        Front end Developer & Data Analytics Enthusiast
+                                        Full-Stack Software Engineer (Web & Mobile)
                                     </span>
                                 </div>
                             </div>
@@ -97,16 +97,15 @@ export default function Hero() {
                                     <Terminal size={20} />
                                 </div>
                                 <p className="text-lg lg:text-xl text-slate-800 leading-relaxed font-mono">
-                                    Hi! I'm Rinaldi — a Frontend Developer who loves building modern
-                                    and user-friendly web applications. Skilled with{' '}
-                                    <span className="bg-blue-100 text-blue-700 px-1 border border-blue-200 rounded font-semibold">React</span>,{' '}
-                                    <span className="bg-gray-200 text-black px-1 border border-gray-300 rounded font-semibold">Next.js</span>, and{' '}
-                                    <span className="bg-sky-100 text-sky-700 px-1 border border-sky-200 rounded font-semibold">Tailwind CSS</span>.
-                                    Beyond the UI, I work with
-                                    <span className="bg-blue-100 text-blue-700 px-1 border border-blue-200 rounded font-semibold">SQL</span> and
-                                    data visualization
-                                    <span className="bg-blue-100 text-blue-700 px-1 border border-blue-200 rounded font-semibold"> to turn raw data into decisions</span>
-                                    — currently diving deeper into finance & tax analytics.
+                                    Hi! I'm Rinaldi — a Full-Stack Software Engineer building scalable, high-performance web & mobile applications. Experienced in{' '}
+                                    <span className="bg-blue-100 text-blue-700 px-1 border border-blue-200 rounded font-semibold">Next.js 15/16</span>,{' '}
+                                    <span className="bg-cyan-100 text-cyan-800 px-1 border border-cyan-200 rounded font-semibold">React 19</span>,{' '}
+                                    <span className="bg-sky-100 text-sky-700 px-1 border border-sky-200 rounded font-semibold">Flutter / Dart</span>, and{' '}
+                                    <span className="bg-indigo-100 text-indigo-700 px-1 border border-indigo-200 rounded font-semibold">PostgreSQL / Prisma</span>.
+                                    Passionate about interactive 3D with{' '}
+                                    <span className="bg-purple-100 text-purple-700 px-1 border border-purple-200 rounded font-semibold">Three.js</span>,
+                                    reliable cloud SaaS architecture, and automation with{' '}
+                                    <span className="bg-emerald-100 text-emerald-700 px-1 border border-emerald-200 rounded font-semibold">Python</span>.
                                 </p>
                             </motion.div>
 
@@ -130,8 +129,8 @@ export default function Hero() {
                                 <motion.a
                                     whileHover={{ scale: 1.05, y: -2 }}
                                     whileTap={{ scale: 0.95, y: 2, boxShadow: "0px 0px 0px 0px rgba(0,0,0,1)" }}
-                                    href="/files/Resume_Rinaldi_Mulya_Pratama.pdf"
-                                    download="Resume_Rinaldi_Mulya_Pratama.pdf"
+                                    href="/files/Resume_Rinaldi_Software_Developer.pdf"
+                                    download="Resume_Rinaldi_Software_Developer.pdf"
                                     className="flex items-center justify-center gap-2 bg-yellow-400 text-black px-8 py-4 font-bold uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
                                 >
                                     <Download size={24} />

@@ -1,7 +1,7 @@
 // Skill Section src\app\components\section\SkillSection.jsx
 "use client"
 import { useState, useRef } from 'react';
-import { Code, Database, Cpu, Gamepad } from 'lucide-react';
+import { Code, Database, Cpu, Gamepad, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 
 export default function Skills() {
@@ -13,18 +13,26 @@ export default function Skills() {
         {
             id: 'web',
             title: 'Web Development',
-            description: 'Full-stack development, PWA & Architecture',
+            description: 'Full-stack development, 3D & Cloud Architecture',
             icon: Code,
-            languages: ['React.js', 'Next.js (App Router)', 'TypeScript', 'JavaScript', 'Tailwind CSS v4', 'Shadcn/Radix UI', 'Zustand / Jotai', 'React Query (TanStack)', 'next-intl (i18n)', 'Playwright (Testing)', 'Node.js / Express.js', 'PostgreSQL / MySQL', 'Prisma ORM (v7)', 'Supabase (Storage & Auth)', 'NextAuth.js v5'],
-            tools: ['Feature-Sliced Design (FSD)', 'Backend for Frontend (BFF)', 'Next.js Caching', 'Progressive Web App (PWA)', 'Git / GitHub / GitLab', 'Postman', 'Figma', 'Docker', 'Vercel / Netlify', 'Storybook']
+            languages: ['Next.js 15/16', 'React 19', 'TypeScript', 'JavaScript', 'Tailwind CSS v4', 'Three.js (3D & 360°)', 'Node.js / Express', 'PostgreSQL / MySQL', 'Prisma ORM (v7)', 'Supabase', 'NextAuth.js v5', 'Zustand / TanStack Query', 'Playwright (E2E)'],
+            tools: ['Feature-Sliced Design (FSD)', 'Backend for Frontend (BFF)', 'Docker', 'Cloudflare Tunnel', 'Git / GitHub', 'Postman', 'Figma', 'Vercel / Netlify', 'AI Coding Workflow (Claude / LLMs)']
+        },
+        {
+            id: 'mobile',
+            title: 'Mobile Development',
+            description: 'Cross-platform mobile apps for Android & iOS',
+            icon: Smartphone,
+            languages: ['Flutter', 'Dart', 'BLoC Pattern', 'Provider', 'Dio / HTTP', 'Secure Storage', 'Clean Architecture', 'Material Design 3', 'REST API Client', 'Google Maps / Geolocation'],
+            tools: ['Android Studio', 'Xcode / iOS Simulator', 'Flutter DevTools', 'Git / GitHub', 'Postman', 'JWT Auth Integration']
         },
         {
             id: 'data',
-            title: 'Data Analytics',
-            description: 'Turning raw data into business decisions',
+            title: 'Automation & Data',
+            description: 'Automation bots, web scraping & data insights',
             icon: Database,
-            languages: ['SQL', 'Google BigQuery', 'Excel'],
-            tools: ['Power BI', 'Tableau', 'Google Data Studio']
+            languages: ['Python', 'SQL (PostgreSQL / MySQL)', 'Telethon (Telegram API)', 'Playwright / BeautifulSoup', 'Google BigQuery', 'Pandas / NumPy', 'Excel'],
+            tools: ['Automated Job Scrapers', 'Power BI', 'Tableau', 'Google Data Studio', 'Crontab / Task Scheduler']
         }
     ];
 
@@ -75,7 +83,7 @@ export default function Skills() {
                     </div>
 
                     {/* Categories Grid */}
-                    <motion.div variants={containerVariants} className="grid md:grid-cols-2 max-w-4xl mx-auto gap-6 mb-16">
+                    <motion.div variants={containerVariants} className="grid md:grid-cols-3 max-w-6xl mx-auto gap-6 mb-16">
                         {categories.map((category) => (
                             <motion.div
                                 variants={itemVariants}
